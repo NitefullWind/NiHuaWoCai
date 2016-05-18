@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
-
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
-module.exports = router;
+module.exports = function(app, dirname) {
+	app.get('/', function(req, res) {
+		res.sendFile(dirname+'/views/index.html');
+	});
+	app.post('/main', function(req, res) {
+		res.cookie('username', req.body.username, {maxAge: 1000*60*60});
+		res.sendFile(dirname+'/views/main.html');
+	})
+};
