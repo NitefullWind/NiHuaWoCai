@@ -1,8 +1,10 @@
 
 var beginx=0,beginy=0,movex=0,movey=0;
 var ismouseDown=false;
-var c = document.getElementById("myCanvas");
+var c = document.getElementById("canvas");
 var cxt = c.getContext("2d");
+
+var crw, crh, cx, cy, cvw, cvh;
 //画笔
 var brush = {
 	"color": "#000000",
@@ -29,12 +31,6 @@ function useEraser()//使用橡皮
 function brushChanged() {
 	this.socket.emit('brushChanged', brush);
 }
-// function setCxtBrush() {
-// 	//重设画笔
-// 	cxt.strokeStyle = this.brush.color;	
-// 	cxt.lineWidth = this.brush.width;
-// 	console.log(cxt.strokeStyle+ " " +cxt.lineWidth);
-// }
 this.socket.on('brushChanged', function(brush){
 	this.brush = brush;
 
@@ -44,10 +40,8 @@ this.socket.on('brushChanged', function(brush){
 
 function mousedown()
 {
-	beginx=event.clientX;//获取当前鼠标坐标
-	beginy=event.clientY-100;
-	cxt.beginPath();
-	cxt.moveTo(beginx,beginy);
+	beginx = getRealX(event.clientX);
+	beginy = getRealY(event.clientY);
 	ismouseDown=true;
 
 	this.socket.emit('beginDraw', {
@@ -64,11 +58,8 @@ function mousemove()
 {	
 	if(ismouseDown==true)
 	{
-		movex=event.clientX;
-		movey=event.clientY-100;
-		cxt.lineTo(movex,movey);
-		cxt.stroke();
-
+		movex = getRealX(event.clientX);
+		movey = getRealY(event.clientY);
 		this.socket.emit('draw', {
 			'x': movex,
 			'y': movey
@@ -76,11 +67,27 @@ function mousemove()
 	}
 	
 }
+//将当前用户的显示坐标转化为画布中的实际坐标
+function initSize() {
+	crw = c.width;	//画布的实际宽度
+	crh = c.height;	//画布的实际高度
+	cx = c.offsetLeft;	//画布起点x值
+	cy = c.offsetTop;	//画布起点y值
+	cvw = c.offsetWidth;	//画布显示出的宽度
+	cvh = c.offsetHeight;	//画布显示出的高度
+};
+function getRealX(mx) {
+	return (mx - cx) / cvw * crw; 
+}
+function getRealY(my) {
+	return (my - cy) / cvh * crh; 
+}
+
 this.socket.on('beginDraw', function(point){
 	cxt.beginPath();
 	cxt.moveTo(point.x, point.y);
-})
+});
 this.socket.on('draw', function(point){
 	cxt.lineTo(point.x, point.y);
 	cxt.stroke();
-})
+});

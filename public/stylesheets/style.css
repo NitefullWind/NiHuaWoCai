@@ -6,3 +6,27 @@ body {
 a {
   color: #00B7FF;
 }
+#center {
+	width: 100%;
+	height: 100%;
+}
+#footer {
+	width: 100%;
+	height: 20%;
+}
+#gameCenter {
+	width: 90%;
+	height: 75%;
+}
+#canvas {
+	width:70%;
+	height:100%;
+	border:1px solid blue;
+	float: left;
+	display: block;
+}
+#chat {
+	width: 25%;
+	height: 100%;
+	float: right;
+}
